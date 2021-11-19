@@ -1,6 +1,6 @@
 class Value:
     def __init__(self):
-        self.amount = None
+        self.amount = 0
 
     def __get__(self, obj, owner):
         return self.amount
