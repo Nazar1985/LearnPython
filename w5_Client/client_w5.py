@@ -12,9 +12,6 @@ class Client:
         self.socket = socket.create_connection((addr, port), timeout)
         self._data = dict()
 
-    def __del__(self):
-        self.socket.close()
-
     def __enter__(self):
         return self
 
@@ -40,10 +37,11 @@ class Client:
         message = bytes(f"get {metric}\n", encoding='utf8')
         self.socket.sendall(message)
         response = self.socket.recv(1024).decode()
+        print(f"reciv data with server: {response.encode('ASCII')}")
         response = response.split('\n')
         if response[0] == 'error':
             raise ClientError
-        elif len(response) > 1 and response[0] == 'ok' and response[1] != '\n':
+        elif len(response) > 1 and response[0] == 'ok' and response[1] != '':
             for r in response[1:-2]:
                 if len(r.split(' ')) == 3:
                     metric, value, timestamp = r.split(' ')
@@ -64,11 +62,8 @@ class Client:
                         self._data.update({metric: list_s})
                 else:
                     raise ClientError
-        elif len(response) > 1 and response[0] == 'ok' and response[1] == '\n':
+        elif len(response) > 1 and response[0] == 'ok' and response[1] == '':
             pass
         else:
-            raise ClientError
+            return self._data
         return self._data
-
-# client = Client('127.0.0.1', 8888, 15)
-# print(client.get("*"))
