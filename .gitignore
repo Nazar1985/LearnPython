@@ -1,3 +1,8 @@
 /venv-learn
 /Cours
 .idea
+
+__pycache__
+*/__pycache__
+
+BASH/
